@@ -36,4 +36,68 @@ export const game = (winner: Player): Game => ({
   player: winner,
 });
 
-export type Score = Points | Game;
+export type Score = Points | Game| Deuce | Forty | Advantage;
+
+export type Deuce = {
+  kind: 'DEUCE';
+};
+
+export const deuce = (): Deuce => ({
+  kind: 'DEUCE',
+});
+
+export type FortyData = {
+  player: Player;
+  otherPoint: Point;
+};
+
+export type Forty = {
+  kind: 'FORTY';
+  player: Player;
+  Point: Point;
+};
+
+export const forty = (player: Player, Point: Point): Forty => ({
+  kind: 'FORTY',
+  player,
+  Point,
+});
+
+export type Advantage = {
+  kind: 'ADVANTAGE';
+  player: Player;
+};
+
+export const advantage = (player: Player): Advantage => ({
+  kind: 'ADVANTAGE',
+  player,
+});
+
+
+export const stringToPoint = (str: string): Point => {
+  switch (str) {
+    case 'LOVE':
+      return 0;
+    case 'FIFTEEN':
+      return 15;
+    case 'THIRTY':
+      return 30;
+    case 'FORTY':
+      return 40;
+    default:
+      throw new Error(`Invalid point string: ${str}`);
+  }
+}
+
+
+export type Thirty = {
+  kind: 'THIRTY';
+};
+
+export const thirty = (): Point => 2;
+
+export type Fifteen = {
+  kind: 'FIFTEEN';
+};
+
+export const fifteen = (): Point => 1;

@@ -1,7 +1,7 @@
 import { describe, expect, test } from '@jest/globals';
-import { otherPlayer, playerToString, scoreWhenAdvantage, scoreWhenDeuce, scoreWhenForty } from '..';
+import { otherPlayer, playerToString, scoreWhenAdvantage, scoreWhenDeuce, scoreWhenForty, scoreWhenPoint } from '..';
 import { stringToPlayer } from '../types/player';
-import { advantage, deuce, forty, game, stringToPoint, thirty } from '../types/score';
+import { advantage, deuce, fifteen, forty, game, love, points, stringToPoint, thirty } from '../types/score';
 
 describe('Tests for tooling functions', () => {
   test('Given playerOne when playerToString', () => {
@@ -97,15 +97,31 @@ describe('Tests for transition functions', () => {
   //   console.log('To fill when we will know how represent Forty');
   // });
   // -------------------------TESTS POINTS-------------------------- //
-  // test('Given players at 0 or 15 points score kind is still POINTS', () => {
-  //   throw new Error(
-  //     'Your turn to code the preconditions, expected result and test.'
-  //   );
-  // });
+  test('Given players at 0 or 15 points score kind is still POINTS', () => {
+    ['PLAYER_ONE', 'PLAYER_TWO'].forEach((winner) => {
+      const currentScore = points(love(), love());
+      const score = scoreWhenPoint(currentScore.pointsData, stringToPlayer(winner));
+      expect(score.kind).toStrictEqual('POINTS');
 
-  // test('Given one player at 30 and win, score kind is forty', () => {
-  //   throw new Error(
-  //     'Your turn to code the preconditions, expected result and test.'
-  //   );
-  // });
+      const currentScore2 = points(fifteen(), love());
+      const score2 = scoreWhenPoint(currentScore2.pointsData, stringToPlayer(winner));
+      expect(score2.kind).toStrictEqual('POINTS');
+    });
+  });
+
+  test('Given one player at 30 and win, score kind is forty', () => {
+    ['PLAYER_ONE', 'PLAYER_TWO'].forEach((winner) => {
+      const currentScore = points(thirty(), love());
+      const score = scoreWhenPoint(currentScore.pointsData, stringToPlayer(winner));
+      if (stringToPlayer(winner) === 'PLAYER_ONE') {
+        expect(score.kind).toStrictEqual('FORTY');
+      }
+
+      const currentScore2 = points(love(), thirty());
+      const score2 = scoreWhenPoint(currentScore2.pointsData, stringToPlayer(winner));
+      if (stringToPlayer(winner) === 'PLAYER_TWO') {
+        expect(score2.kind).toStrictEqual('FORTY');
+      }
+    });
+  });
 });

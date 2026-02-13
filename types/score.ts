@@ -1,13 +1,35 @@
 import { Player } from './player';
 
-// Surely not the best choice
-export type Point = number;
+export type Love = {
+  kind: 'LOVE';
+};
+
+export type Fifteen = {
+  kind: 'FIFTEEN';
+};
+
+export type Thirty = {
+  kind: 'THIRTY';
+};
+
+export const love = (): Love => ({
+  kind: 'LOVE',
+});
+
+export const fifteen = (): Fifteen => ({
+  kind: 'FIFTEEN',
+});
+
+export const thirty = (): Thirty => ({
+  kind: 'THIRTY',
+});
+
+export type Point = Love | Fifteen | Thirty;
 
 export type PointsData = {
   PLAYER_ONE: Point;
   PLAYER_TWO: Point;
 };
-
 export type Points = {
   kind: 'POINTS';
   pointsData: PointsData;
@@ -47,20 +69,21 @@ export const deuce = (): Deuce => ({
 });
 
 export type FortyData = {
-  player: Player;
-  otherPoint: Point;
+  player: Player; // The player who have forty points
+  otherPoint: Point; // Points of the other player
 };
 
 export type Forty = {
   kind: 'FORTY';
-  player: Player;
-  Point: Point;
+  fortyData: FortyData;
 };
 
-export const forty = (player: Player, Point: Point): Forty => ({
+export const forty = (player: Player, otherPoint: Point): Forty => ({
   kind: 'FORTY',
-  player,
-  Point,
+  fortyData: {
+    player,
+    otherPoint,
+  },
 });
 
 export type Advantage = {
@@ -77,27 +100,12 @@ export const advantage = (player: Player): Advantage => ({
 export const stringToPoint = (str: string): Point => {
   switch (str) {
     case 'LOVE':
-      return 0;
+      return love();
     case 'FIFTEEN':
-      return 15;
+      return fifteen();
     case 'THIRTY':
-      return 30;
-    case 'FORTY':
-      return 40;
+      return thirty();
     default:
       throw new Error(`Invalid point string: ${str}`);
   }
 }
-
-
-export type Thirty = {
-  kind: 'THIRTY';
-};
-
-export const thirty = (): Point => 2;
-
-export type Fifteen = {
-  kind: 'FIFTEEN';
-};
-
-export const fifteen = (): Point => 1;

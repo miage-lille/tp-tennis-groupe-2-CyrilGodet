@@ -21,8 +21,16 @@ export const otherPlayer = (player: Player) => {
   }
 };
 // Exercice 1 :
-export const pointToString = (point: Point): string =>
-  'You can use pattern matching with switch case pattern.';
+export const pointToString = (point: Point): string => {
+  switch (point.kind) {
+    case 'LOVE':
+      return 'Love';
+    case 'FIFTEEN':
+      return '15';
+    case 'THIRTY':
+      return '30';
+  }
+};
 
 export const scoreToString = (score: Score): string => {
   const scoreHandlers: Record<Score['kind'], (s: Score) => string> = {
@@ -36,8 +44,9 @@ export const scoreToString = (score: Score): string => {
     },
     DEUCE: () => 'Deuce',
     FORTY: (s) => {
-      const { player, point } = s as unknown as { kind: 'FORTY'; player: Player; point: Point };
-      return `${playerToString(player)}: 40 - ${playerToString(otherPlayer(player))}: ${pointToString(point)}`;
+      const { fortyData } = s as { kind: 'FORTY'; fortyData: FortyData };
+      const { player, otherPoint } = fortyData;
+      return `${playerToString(player)}: 40 - ${playerToString(otherPlayer(player))}: ${pointToString(otherPoint)}`;
     },
     ADVANTAGE: (s) => {
       const { player } = s as { kind: 'ADVANTAGE'; player: Player };
@@ -87,7 +96,24 @@ export const incrementPoint = (point: Point) : Option.Option<Point> => {
 // Tip: You can use pipe function from Effect to improve readability.
 // See scoreWhenForty function above.
 export const scoreWhenPoint = (current: PointsData, winner: Player): Score => {
-  throw new Error('not implemented');
+  const winnerPoint = current[winner];
+
+  return pipe(
+    incrementPoint(winnerPoint),
+    Option.match({
+      onNone: () => {
+        const loser = otherPlayer(winner);
+        return forty(winner, current[loser]) as Score;
+      },
+      onSome: (p: Point) => ({
+        kind: 'POINTS',
+        pointsData: {
+          ...current,
+          [winner]: p,
+        },
+      }),
+    })
+  );
 };
 
 // Exercice 3

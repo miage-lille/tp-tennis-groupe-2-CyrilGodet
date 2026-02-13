@@ -1,5 +1,5 @@
 import { isSamePlayer, Player, stringToPlayer } from './types/player';
-import { FortyData, Point, PointsData, Score, advantage, deuce, forty, game, thirty, fifteen } from './types/score';
+import { FortyData, Point, PointsData, Score, advantage, deuce, forty, game, thirty, fifteen, points, love } from './types/score';
 import { pipe, Option } from 'effect'
 
 // -------- Tooling functions --------- //
@@ -118,9 +118,22 @@ export const scoreWhenPoint = (current: PointsData, winner: Player): Score => {
 
 // Exercice 3
 export const scoreWhenGame = (winner: Player): Score => {
-  throw new Error('not implemented');
+  return game(winner);
 };
 
-export const score = (currentScore: Score, winner: Player): Score => {
-  throw new Error('not implemented');
+const score = (currentScore: Score, winner: Player): Score => {
+  switch (currentScore.kind) {
+    case 'POINTS':
+      return scoreWhenPoint(currentScore.pointsData, winner);
+    case 'FORTY':
+      return scoreWhenForty(currentScore.fortyData, winner);
+    case 'DEUCE':
+      return scoreWhenDeuce(winner);
+    case 'ADVANTAGE':
+      return scoreWhenAdvantage(currentScore.player, winner);
+    case 'GAME':
+      return scoreWhenGame(currentScore.player);
+  }
 };
+
+const newGame: Score = points(love(), love());
